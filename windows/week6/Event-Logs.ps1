@@ -38,7 +38,7 @@ return $loginoutsTable
 ****************************** #>
 function getFailedLogins($timeBack){
   
-  $failedlogins = Get-EventLog security -After (Get-Date).AddDays("-"+"$timeBack") | Where { $_.InstanceID -eq "4625" } #| Where {$_.Message -match "Account Name:\s+$user\b"}
+  $failedlogins = Get-EventLog security -After (Get-Date).AddDays("-"+"$timeBack") | Where { $_.InstanceID -eq "4625" }
 
   $failedloginsTable = @()
   for($i=0; $i -lt $failedlogins.Count; $i++){
@@ -66,16 +66,16 @@ function getFailedLogins($timeBack){
 
 function atRiskUser($time){
     
-    $test = getFailedLogins $time
+    #$failedLogOn = getFailedLogins $time
 
-    $test2 = $test | Group-Object -Property Users -NoElement | Where-Object {$_.Count -gt 10} 
+    $failedLogOn = Get-EventLog -LogName Security -InstanceID 4625 -EntryType FailureAudit | Select-Object -ExpandProperty Message
 
-    if($test2){
-        foreach($entry in $test2){
-            Write-Host ("{0} => {1} failed logins" -f $entry.Name, $entry.Count)
-        }
-    }
-    else{
-        Write-Host "No users found at risk"
-    }
+     #| Where {$_.Message -match "Account Name:\s+$user\b"}
+
+    $users = $failedLogOn | Where-Object {$_ -match "Account Name:\s*(\S+)"} | `
+        ForEach-Object { ($_ -match "Account Name:\s*(\S+)") | Out-Null; $matches[1] }
+
+    $userFailed10 = $users | Group-Object | Where-Object {$_.Count -gt 10}
+
+    $userFailed10 | Format-Table Name,Count
 }
