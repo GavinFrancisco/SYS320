@@ -172,9 +172,9 @@ while($operation){
     }
 
     # Fail check - done
-    #else{
-    #    Write-Host "Unknown selection, please try again"
-    #} 
+    else{
+        Write-Host "Unknown selection, please try again"
+    } 
 
 
 }
