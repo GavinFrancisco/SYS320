@@ -37,6 +37,11 @@ echo ""
 # Example input: JOYC 310
 # Example output: See the screenshots in canvas
 
+function courseDisplay(){
+	read -p "Please enter the classroom: " classRoom
+	cat courses.txt | grep "$classRoom"
+}
+
 # TODO - 2
 # Make a function that displays all the courses that has availability
 # (seat number will be more than 0) for the given course code
@@ -44,12 +49,25 @@ echo ""
 # Example input: SEC
 # Example output: See the screenshots in canvas
 
+function courseAvail(){
+	read -p "Please enter the subject: " name
+ 	grep -n $name courses.txt | while IFS= read -r line;
+	do
+		testing=$(echo $line | cut -d ';' -f4)
+		if [[ $testing -gt 0 ]]; then
+			echo $line
+		fi
+	done
+}
+
 while :
 do
 	echo ""
 	echo "Please select and option:"
 	echo "[1] Display courses of an instructor"
 	echo "[2] Display course count of instructors"
+	echo "[3] Display courses in a certian room"
+	echo "[4] Display all avaiable classes"
 	echo "[5] Exit"
 
 	read userInput
@@ -65,6 +83,13 @@ do
 	elif [[ "$userInput" == "2" ]]; then
 		courseCountofInsts
 
+	elif [[ "$userInput" == "3" ]]; then
+		courseDisplay
+	
+	elif [[ "$userInput" == "4" ]]; then
+		courseAvail
 	# TODO - 3 Display a message, if an invalid input is given
+	else
+		echo "Invalid input, try again"
 	fi
 done
